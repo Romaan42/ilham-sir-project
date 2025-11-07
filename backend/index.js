@@ -112,7 +112,5 @@ app.delete("/student/:id", async (req, res) => {
 });
 
 mongoose.connect(process.env.MONGO_URL).then(() => {
-  app.listen(process.env.PORT, () => {
-    console.log("Server is running on http://localhost:" + process.env.PORT);
-  });
+  console.log("Connected to MongoDB");
 });
