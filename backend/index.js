@@ -2,11 +2,11 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const { default: mongoose } = require("mongoose");
-const Student = require("./models/students");
-const User = require("./models/user");
+const Student = require("./models/students.js");
+const User = require("./models/user.js");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const authMiddleware = require("./auth/authMiddleWare");
+const authMiddleware = require("./auth/authMiddleWare.js");
 const cookieParser = require("cookie-parser");
 
 require("dotenv").config();
