@@ -28,20 +28,6 @@ app.get("/", (req, res) => {
 
 app.post("/student", async (req, res) => {
   try {
-    // const existStudent = await Student.find({
-    //   name: req.body.name,
-    //   // fatherName: req.body.fatherName,
-    // });
-
-    // if (
-    //   existStudent.name === req.body.name &&
-    //   existStudent.fatherName === req.body.fatherName
-    // )
-    //   return res.json({
-    //     success: false,
-    //     message: "This Student is already exists",
-    //   });
-
     const student = new Student(req.body);
     await student.save();
 
