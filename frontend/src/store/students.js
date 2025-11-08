@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "../api/axiosConfig";
 
 export const getAllStudents = createAsyncThunk("getstudents", async () => {
-  const res = await api.get("/students");
+  const res = await api.get("/students-data");
   if (res) return res.data;
 });
 
