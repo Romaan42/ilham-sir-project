@@ -111,11 +111,34 @@ app.delete("/student/:id", async (req, res) => {
   if (students) return res.send(students);
 });
 
-mongoose.connect(process.env.MONGO_URL).then(() => {
-  console.log("Connected to MongoDB");
-  app.listen(process.env.PORT, () => {
-    console.log(`Server is running on port ${process.env.PORT}`);
-  });
-});
+// mongoose.connect(process.env.MONGO_URL).then(() => {
+//   console.log("Connected to MongoDB");
+//   app.listen(process.env.PORT, () => {
+//     console.log(`Server is running on port ${process.env.PORT}`);
+//   });
+// });
 
+const isConnected = false;
+async function connectToDatabase() {
+  try {
+    await mongoose.connect(process.env.MONGO_URL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log("Connected to MongoDB");
+    isConnected = true;
+  } catch (error) {
+    console.error("Error connecting to MongoDB:", error);
+  }
+}
+
+app.use((req, res, next) => {
+  if (!isConnected) {
+    connectToDatabase().then(() => {
+      next();
+    });
+  } else {
+    next();
+  }
+});
 module.exports = app;
