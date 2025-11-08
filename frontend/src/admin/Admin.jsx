@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { checkAdminLogin } from '../store/adminLogin';
-import AdminPanel from './adminPanel';
+import AdminPanel from './AdminPanel';
 import Login from "./loginForm"
 import AdminLoader from './adminLoader';
 
@@ -16,7 +16,7 @@ const Admin = () => {
     useEffect(adminCheck, []);
 
 
-    if (loginLoading) return <AdminLoader />
+    if (loginLoading && !adminData) return <AdminLoader />
     if (!adminData?.adminLogin) return <Login />
 
     return (
