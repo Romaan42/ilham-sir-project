@@ -134,10 +134,7 @@ async function connectToDatabase() {
 
 app.use((req, res, next) => {
   if (!isConnected) {
-    connectToDatabase().then(() => {
-      next();
-    });
-  } else {
+    connectToDatabase();
     next();
   }
 });
