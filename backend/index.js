@@ -92,7 +92,7 @@ app.post("/admin-login", async (req, res) => {
   }
 });
 
-const authMiddleware = async (req, res, next) => {
+const authMiddleWare = async (req, res, next) => {
   const token = req.cookies.token;
 
   if (token) {
@@ -105,9 +105,7 @@ const authMiddleware = async (req, res, next) => {
   }
 };
 
-module.exports = authMiddleware;
-
-app.get("/admin-check-login", authMiddleware, (req, res) => {
+app.get("/admin-check-login", authMiddleWare, (req, res) => {
   const user = req.user;
   res.send({ adminLogin: true, message: "Welcome ILHAM SIR!", user: user });
 });
