@@ -6,7 +6,6 @@ const Student = require("./models/students.js");
 const User = require("./models/user.js");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const authMiddleware = require("./auth/authMiddleWare.js");
 const cookieParser = require("cookie-parser");
 
 require("dotenv").config();
@@ -93,6 +92,21 @@ app.post("/admin-login", async (req, res) => {
   }
 });
 
+const authMiddleware = async (req, res, next) => {
+  const token = req.cookies.token;
+
+  if (token) {
+    const decoded = await jwt.decode(token, process.env.JWT_SECRET);
+    req.user = await User.findById(decoded.adminId);
+
+    next();
+  } else {
+    res.status(401).json({ login: true, message: "Not authorized, no token" });
+  }
+};
+
+module.exports = authMiddleware;
+
 app.get("/admin-check-login", authMiddleware, (req, res) => {
   const user = req.user;
   res.send({ adminLogin: true, message: "Welcome ILHAM SIR!", user: user });
@@ -114,7 +128,9 @@ app.delete("/student/:id", async (req, res) => {
 // mongoose.connect(process.env.MONGO_URL).then(() => {
 //   console.log("Connected to MongoDB");
 //   app.listen(process.env.PORT, () => {
-//     console.log(`Server is running on port ${process.env.PORT}`);
+//     console.log(
+//       `Server is running on port http://localhost:${process.env.PORT}`
+//     );
 //   });
 // });
 
