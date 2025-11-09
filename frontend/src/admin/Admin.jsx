@@ -20,9 +20,7 @@ const Admin = () => {
     if (!adminData?.adminLogin) return <Login />
 
     return (
-
         <AdminPanel />
-
     );
 };
 
