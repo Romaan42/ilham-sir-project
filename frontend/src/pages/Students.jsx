@@ -1,6 +1,6 @@
-
-
 import { useState, useEffect } from 'react';
+import api from '../api/axiosConfig';
+
 
 const Students = () => {
     const [students, setStudents] = useState([
@@ -52,10 +52,11 @@ const Students = () => {
     // Get unique courses for filter dropdown
     const courses = [...new Set(students.map(student => student.course))];
 
-    // useEffect(() => {
-    //     axios.get('/api/students')
-    //     setLoading(true);
-    // }, []);
+    useEffect(() => {
+        api.get("/students-data").then((response) => {
+            console.log(response.data);
+        })
+    }, []);
 
     return (
         <div className="min-h-screen bg-gray-50">
