@@ -19,7 +19,7 @@ const StudentPanel = () => {
     }
 
     return (
-        <main className="p-6">
+        <main className="lg:p-6 md:p-0">
 
             <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
                 <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">

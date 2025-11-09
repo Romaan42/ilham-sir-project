@@ -12,7 +12,9 @@ const AdminPanel = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const location = useLocation();
 
-
+    const setItDefault = () => {
+        setIsSidebarOpen(false);
+    }
     const navigation = [
         { name: 'Dashboard', path: '/admin', icon: <MdDashboard /> },
         { name: 'Students', path: '/admin/students', icon: <FaRegUser /> },
@@ -28,7 +30,7 @@ const AdminPanel = () => {
         dispatch(adminLogout());
     }
     return (
-        <div className="min-h-screen bg-gray-100">
+        <div className="min-h-screen fixed bg-gray-100">
             <FaBars className='absolute text-2xl top-5 left-5 cursor-pointer' onClick={() => setIsSidebarOpen(true)} />
             <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
                 } transition-transform duration-300 ease-in-out `}>
@@ -43,7 +45,7 @@ const AdminPanel = () => {
                 {/* Navigation Links */}
                 <nav className="mt-5 px-2">
                     {navigation.map((item) => (
-                        <Link
+                        <Link onClick={setItDefault}
                             key={item.name}
                             to={item.path}
                             className={`flex items-center px-4 py-3 text-gray-700 rounded-lg mb-1 ${isActivePath(item.path)
@@ -67,7 +69,7 @@ const AdminPanel = () => {
             </div>
 
             {/* Main Content */}
-            <div className={`${isSidebarOpen ? 'ml-64' : 'ml-0'} transition-margin duration-300 ease-in-out`}>
+            <div className={`${isSidebarOpen ? 'ml-64' : 'ml-0'} fixed transition-margin duration-300 ease-in-out`}>
                 {/* Top Header */}
                 <header className="bg-white shadow-sm">
                     <div className="flex items-center justify-between h-16 px-4">
