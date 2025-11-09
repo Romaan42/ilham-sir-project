@@ -7,6 +7,9 @@ const Header = () => {
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+    const setIsDefault = () => {
+        setIsMenuOpen(false);
+    }
 
     return (
         <header className="bg-white shadow-md sticky top-0 z-50 h-16">
@@ -15,7 +18,7 @@ const Header = () => {
                 <div className="hidden md:flex space-x-6 ">
                     <Link to="/" className="text-gray-600 hover:text-indigo-600 transition duration-300">Home</Link>
                     <Link to="/about" className="text-gray-600 hover:text-indigo-600 transition duration-300">About</Link>
-                    <Link to="/course" className="text-gray-600 hover:text-indigo-600 transition duration-300">DIT Course</Link>
+                    {/* <Link to="/course" className="text-gray-600 hover:text-indigo-600 transition duration-300">DIT Course</Link> */}
                     <Link to="/students" className="text-gray-600 hover:text-indigo-600 transition duration-300">Students</Link>
                     <Link to="/contact" className="text-gray-600 hover:text-indigo-600 transition duration-300">Contact</Link>
                 </div>
@@ -26,11 +29,11 @@ const Header = () => {
             </nav>
 
             <div id="mobile-menu" className={`${!isMenuOpen ? "-translate-y-100" : "-translate-y-0"} md:hidden transition-all duration-300 h-fit bg-white shadow-md w-full`}>
-                <Link to="/home" className=" block py-2 px-4 text-sm hover:bg-gray-100">Home</Link>
-                <Link to="/about" className="block py-2 px-4 text-sm hover:bg-gray-100">About</Link>
-                <Link to="/course" className="block py-2 px-4 text-sm hover:bg-gray-100">DIT Course</Link>
-                <Link to="/students" className="block py-2 px-4 text-sm hover:bg-gray-100">Resources</Link>
-                <Link to="/contact" className="block py-2 px-4 text-sm hover:bg-gray-100">Contact</Link>
+                <Link onClick={setIsDefault} to="/" className=" block py-2 px-4 text-sm hover:bg-gray-100">Home</Link>
+                <Link onClick={setIsDefault} to="/about" className="block py-2 px-4 text-sm hover:bg-gray-100">About</Link>
+                {/* <Link to="/course" className="block py-2 px-4 text-sm hover:bg-gray-100">DIT Course</Link> */}
+                <Link onClick={setIsDefault} to="/students" className="block py-2 px-4 text-sm hover:bg-gray-100">Students</Link>
+                <Link onClick={setIsDefault} to="/contact" className="block py-2 px-4 text-sm hover:bg-gray-100">Contact</Link>
             </div>
         </header>
     )
