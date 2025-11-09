@@ -30,7 +30,7 @@ const AdminPanel = () => {
         dispatch(adminLogout());
     }
     return (
-        <div className="min-h-screen fixed bg-gray-100">
+        <div className="min-h-screen bg-gray-100">
             <FaBars className='absolute text-2xl top-5 left-5 cursor-pointer' onClick={() => setIsSidebarOpen(true)} />
             <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
                 } transition-transform duration-300 ease-in-out `}>
@@ -69,7 +69,7 @@ const AdminPanel = () => {
             </div>
 
             {/* Main Content */}
-            <div className={`${isSidebarOpen ? 'ml-64' : 'ml-0'} fixed transition-margin duration-300 ease-in-out`}>
+            <div className={`${isSidebarOpen ? 'ml-64' : 'ml-0'}  transition-margin duration-300 ease-in-out`}>
                 {/* Top Header */}
                 <header className="bg-white shadow-sm">
                     <div className="flex items-center justify-between h-16 px-4">
@@ -98,7 +98,7 @@ const AdminPanel = () => {
                 </header>
 
                 {/* Page Content */}
-                <main className="p-6">
+                <main className="lg:p-6 md:p-0">
                     <Outlet />
                 </main>
             </div>
