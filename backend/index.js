@@ -100,9 +100,9 @@ app.post("/admin-login", async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 2 * 24 * 60 * 60 * 1000,
+      secure: process.env.NODE_ENV === "production", // Only true in prod (HTTPS)
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // important!
+      maxAge: 2 * 24 * 60 * 60 * 1000, // 2 days
     });
 
     res.send({ adminLogin: true, message: "Welcome ILHAM SIR!", user });
