@@ -21,7 +21,7 @@ const AddStudent = () => {
             fees: e.target.fees.value,
         };
         axios
-            .post("http://localhost:3000/student", allData)
+            .post("https://ilham-sir-project.vercel.app/student", allData)
             .then((res) => {
                 toast.success(res.data.message);
                 document.getElementById("studentForm").reset();

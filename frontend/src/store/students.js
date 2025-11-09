@@ -19,6 +19,7 @@ const studentSlice = createSlice({
   initialState: {
     loading: false,
     students: [],
+    error: null,
   },
   reducers: {},
   extraReducers: (builder) => {

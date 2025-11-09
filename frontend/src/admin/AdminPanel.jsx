@@ -9,7 +9,7 @@ import { adminLogout } from '../store/adminLogin';
 
 const AdminPanel = () => {
     const dispatch = useDispatch();
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const location = useLocation();
 
 

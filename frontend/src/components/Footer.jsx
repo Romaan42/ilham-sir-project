@@ -1,10 +1,15 @@
+import { Link } from "react-router-dom";
 
 const Footer = () => {
     return (
         <footer className="bg-gray-800 text-white py-6">
             <div className="container mx-auto px-6 text-center">
                 <p>&copy; 2025 Ilham Sir. All Rights Reserved.</p>
-                <p className="text-sm text-gray-400 mt-1">Designed with care for my students.</p>
+                <p className="text-sm text-gray-400 mt-1">Designed with care for my students.
+                    <Link to="/admin" className="hover:underline">Ilham sir</Link>
+
+                </p>
+                <p className="mt-10">Powered By ROMAN KHAN</p>
             </div>
         </footer>
     )

@@ -1,61 +1,24 @@
 import { useState, useEffect } from 'react';
-import api from '../api/axiosConfig';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllStudents } from '../store/students';
 
 
 const Students = () => {
-    const [students, setStudents] = useState([
-        {
-            id: 1,
-            name: "John Doe",
-            email: "john.doe@example.com",
-            course: "Web Development",
-            enrollmentDate: "2023-09-15",
-            status: "active",
-            progress: 75,
-            image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.25&w=256&h=256&q=80"
-        },
-        {
-            id: 2,
-            name: "Jane Smith",
-            email: "jane.smith@example.com",
-            course: "Python Programming",
-            enrollmentDate: "2023-08-20",
-            status: "active",
-            progress: 90,
-            image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.25&w=256&h=256&q=80"
-        },
-        {
-            id: 3,
-            name: "Mike Johnson",
-            email: "mike.j@example.com",
-            course: "MS Office Professional",
-            enrollmentDate: "2023-10-01",
-            status: "active",
-            progress: 45,
-            image: "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.25&w=256&h=256&q=80"
-        }
-    ]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const dispatch = useDispatch();
+
     const [searchTerm, setSearchTerm] = useState('');
     const [filterCourse, setFilterCourse] = useState('all');
 
+    const { students, loading, error } = useSelector(state => state.students)
 
-    // Filter and search functionality
-    const filteredStudents = students.filter(student => {
-        const matchesSearch = student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            student.email.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesCourse = filterCourse === 'all' || student.course === filterCourse;
-        return matchesSearch && matchesCourse;
-    });
+
+
 
     // Get unique courses for filter dropdown
     const courses = [...new Set(students.map(student => student.course))];
 
     useEffect(() => {
-        api.get("/students-data").then((response) => {
-            console.log(response.data);
-        })
+        dispatch(getAllStudents());
     }, []);
 
     return (
@@ -116,58 +79,81 @@ const Students = () => {
 
                 {/* Students Grid */}
                 {!loading && !error && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {filteredStudents.map((student) => (
-                            <div key={student.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                                <div className="relative">
-                                    <img
-                                        src={student.image}
-                                        alt={student.name}
-                                        className="w-full h-48 object-cover"
-                                    />
-                                    <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-semibold ${student.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                                        }`}>
-                                        {student.status}
-                                    </div>
-                                </div>
-                                <div className="p-6">
-                                    <h3 className="text-xl font-semibold text-gray-900 mb-2">{student.name}</h3>
-                                    <p className="text-gray-600 mb-4">{student.email}</p>
-                                    <div className="space-y-3">
-                                        <div className="flex justify-between text-sm">
-                                            <span className="text-gray-500">Course:</span>
-                                            <span className="font-medium text-gray-900">{student.course}</span>
-                                        </div>
-                                        <div className="flex justify-between text-sm">
-                                            <span className="text-gray-500">Enrolled:</span>
-                                            <span className="font-medium text-gray-900">
-                                                {new Date(student.enrollmentDate).toLocaleDateString()}
+                    <div className="overflow-x-auto">
+
+                        <table className="min-w-full divide-y divide-gray-200">
+                            {loading && <h1 className="p-5 font-bold text-center">Loading students...</h1>}
+                            {!loading && students.length === 0 && <h1 className="p-5 font-bold text-center">No students found</h1>}
+                            <thead className="bg-gray-50">
+                                <tr>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Student
+                                    </th>
+
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Course
+                                    </th>
+
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Date of birth
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Enroll Date
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Fees
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+
+                                {students.map((val) => (
+                                    <tr key={val._id} className="hover:bg-gray-50 transition duration-150">
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="flex items-center">
+                                                <div className="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                                    <span className="text-blue-600 font-medium">{val.name[0]}</span>
+                                                </div>
+                                                <div className="ml-4">
+                                                    <div className="text-sm font-medium text-gray-900">
+                                                        {val.name}
+                                                    </div>
+                                                    <div className="text-sm text-gray-500">
+                                                        {val.email}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="text-sm text-gray-900">{val.course}</div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div>
+                                                {val.dob}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="flex items-center">
+                                                10/12/2025
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                                Completed
                                             </span>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <div className="flex justify-between text-sm">
-                                                <span className="text-gray-500">Progress:</span>
-                                                <span className="font-medium text-gray-900">{student.progress}%</span>
-                                            </div>
-                                            <div className="w-full bg-gray-200 rounded-full h-2">
-                                                <div
-                                                    className="bg-blue-600 h-2 rounded-full"
-                                                    style={{ width: `${student.progress}%` }}
-                                                ></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <button className="mt-6 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                                        View Profile
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
+                                        </td>
+
+                                    </tr>
+                                ))}
+
+                            </tbody>
+                        </table>
                     </div>
                 )}
 
                 {/* No Results */}
-                {!loading && !error && filteredStudents.length === 0 && (
+                {!loading && !error && students.length === 0 && (
                     <div className="text-center py-12">
                         <p className="text-gray-600 text-xl">No students found matching your criteria</p>
                     </div>
