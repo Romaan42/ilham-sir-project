@@ -17,7 +17,7 @@ app.use(
   cors({
     origin: process.env.FRONTEND_URL,
     credentials: true,
-    secure: false,
+    secure: process.env.NODE_ENV === "deployment",
   })
 );
 
@@ -123,16 +123,8 @@ app.delete("/student/:id", async (req, res) => {
   if (students) return res.send(students);
 });
 
-// mongoose.connect(process.env.MONGO_URL).then(() => {
-//   console.log("Connected to MongoDB");
-//   app.listen(process.env.PORT, () => {
-//     console.log(
-//       `Server is running on port http://localhost:${process.env.PORT}`
-//     );
-//   });
-// });
-
 let isConnected = false;
+
 async function connectToDatabase() {
   try {
     await mongoose.connect(process.env.MONGO_URL, {

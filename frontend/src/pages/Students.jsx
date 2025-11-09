@@ -52,6 +52,11 @@ const Students = () => {
     // Get unique courses for filter dropdown
     const courses = [...new Set(students.map(student => student.course))];
 
+    // useEffect(() => {
+    //     axios.get('/api/students')
+    //     setLoading(true);
+    // }, []);
+
     return (
         <div className="min-h-screen bg-gray-50">
 
