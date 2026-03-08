@@ -23,7 +23,7 @@ const AddStudent = () => {
         };
 
         axios
-            .post("https://ilham-sir-finel.vercel.app/student", allData)
+            .post("https://ilham-sir-project.vercel.app /student", allData)
             .then((res) => {
                 toast.success(res.data.message);
                 document.getElementById("studentForm").reset();

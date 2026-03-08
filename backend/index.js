@@ -10,189 +10,241 @@ const cookieParser = require("cookie-parser");
 require("dotenv").config();
 
 // -----------------------------
-// CONSTANTS
-// -----------------------------
-// Get the frontend URL from environment variables, or use the deployed URL as a fallback.
-// IMPORTANT: Ensure this variable is set to 'https://ilham-sir-final.vercel.app' in Vercel.
-const FRONTEND_URL =
-  process.env.FRONTEND_URL || "https://ilham-sir-final.vercel.app";
-const LOCAL_FRONTEND_URL = "http://localhost:5173";
-const ALLOWED_ORIGINS = [FRONTEND_URL, LOCAL_FRONTEND_URL];
-
-// -----------------------------
 // MIDDLEWARES
 // -----------------------------
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ✅ Configure CORS properly
+// -----------------------------
+// CORS CONFIG
+// -----------------------------
+const ALLOWED_ORIGINS = [
+  "http://localhost:5173",
+  "https://ilham-sir-final.vercel.app",
+];
+
 app.use(
   cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps or curl requests)
+    origin: function (origin, callback) {
       if (!origin) return callback(null, true);
-      // Allow requests from specific origins
-      if (ALLOWED_ORIGINS.includes(origin)) {
-        callback(null, true);
-      } else {
-        // Log the blocked origin for debugging
-        console.warn(`Blocked by CORS: ${origin}`);
-        callback(new Error("Not allowed by CORS"), false);
+
+      if (ALLOWED_ORIGINS.includes(origin) || origin.endsWith(".vercel.app")) {
+        return callback(null, true);
       }
+
+      console.warn("Blocked by CORS:", origin);
+      return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
-    // FIX: Corrected typo from 'orginSuccessStatus' to 'optionsSuccessStatus'
-    optionsSuccessStatus: 200,
   }),
 );
 
 // -----------------------------
 // DATABASE CONNECTION
 // -----------------------------
+let isConnected = false;
+
 async function connectToDatabase() {
+  if (isConnected) return;
+
   try {
-    await mongoose.connect(process.env.MONGODB_URL);
-    console.log("✅ Connected to MongoDB");
+    const db = await mongoose.connect(process.env.MONGODB_URL);
+    isConnected = db.connections[0].readyState;
+    console.log("✅ MongoDB connected");
   } catch (error) {
-    console.error("❌ Error connecting to MongoDB:", error);
-    process.exit(1);
+    console.error("❌ MongoDB error:", error);
   }
 }
 
-connectToDatabase(); // connect immediately when the app starts
+app.use(async (req, res, next) => {
+  await connectToDatabase();
+  next();
+});
 
 // -----------------------------
 // ROUTES
 // -----------------------------
+
 app.get("/", (req, res) => {
   res.send("Welcome to my page");
 });
 
+// -----------------------------
+// ADD STUDENT
+// -----------------------------
 app.post("/student", async (req, res) => {
   try {
-    const {
-      name,
-      fatherName,
-      phone,
-      dob,
-      gender,
-      email,
-      address,
-      course,
-      enrlDate,
-      fees,
-    } = req.body;
     const student = new Student({
-      name,
-      fatherName,
-      phone,
-      dob,
-      gender,
-      email,
-      address,
-      course,
-      enrlDate,
-      fee: fees,
+      ...req.body,
+      fee: req.body.fees,
     });
+
     await student.save();
-    res.send({ success: true, message: "Student Registered" });
-  } catch (error) {
-    res.send({ success: false, message: "Student add failed" });
-  }
-});
 
-app.get("/students-data", async (req, res) => {
-  try {
-    // This route is the one that was being blocked by the CORS error
-    const students = await Student.find();
-    res.send(students);
-  } catch (error) {
-    res.status(500).send({ error: "Failed to fetch students" });
-  }
-});
-
-app.post("/admin-register", async (req, res) => {
-  const { email, password } = req.body;
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const user = new User({ email, password: hashedPassword });
-  await user.save();
-  res.send("Register success");
-});
-
-app.post("/admin-login", async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      return res.status(404).json({ login: false, message: "Invalid Admin" });
-    }
-
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res
-        .status(401)
-        .json({ login: false, message: "Incorrect password" });
-    }
-
-    const token = jwt.sign(
-      { adminId: user._id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: "2d" },
-    );
-
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      // sameSite: 'none' and secure: true are MANDATORY for cross-site cookie transmission
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      maxAge: 2 * 24 * 60 * 60 * 1000, // 2 days
+    res.send({
+      success: true,
+      message: "Student Registered",
     });
-
-    res.send({ adminLogin: true, message: "Welcome ILHAM SIR!", user });
   } catch (error) {
     console.error(error);
-    res.status(500).send("Some error occurred");
+    res.status(500).send({
+      success: false,
+      message: "Student add failed",
+    });
   }
-});
-
-const authMiddleware = async (req, res, next) => {
-  const token = req.cookies.token;
-  if (!token)
-    return res
-      .status(401)
-      .json({ login: false, message: "Not authorized, no token" });
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = await User.findById(decoded.adminId);
-    next();
-  } catch (error) {
-    return res.status(401).json({ login: false, message: "Invalid token" });
-  }
-};
-
-app.get("/admin-check-login", authMiddleware, (req, res) => {
-  res.send({ adminLogin: true, message: "Welcome ILHAM SIR!", user: req.user });
-});
-
-app.get("/admin-logout", (req, res) => {
-  res.clearCookie("token", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-  }); // Also clear cookies with the same options they were set with
-  res.send({ adminLogin: false, message: "Admin logged out successfully" });
-});
-
-app.delete("/student/:id", async (req, res) => {
-  const studentId = req.params.id;
-  await Student.findByIdAndDelete(studentId);
-  const students = await Student.find();
-  res.send(students);
 });
 
 // -----------------------------
+// GET STUDENTS
+// -----------------------------
+app.get("/students-data", async (req, res) => {
+  try {
+    const students = await Student.find();
+    res.send(students);
+  } catch (error) {
+    res.status(500).send({
+      error: "Failed to fetch students",
+    });
+  }
+});
 
+// -----------------------------
+// ADMIN REGISTER
+// -----------------------------
+app.post("/admin-register", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = new User({
+      email,
+      password: hashedPassword,
+    });
+
+    await user.save();
+
+    res.send("Register success");
+  } catch (error) {
+    res.status(500).send("Register failed");
+  }
+});
+
+// -----------------------------
+// ADMIN LOGIN
+// -----------------------------
+app.post("/admin-login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({
+        login: false,
+        message: "Invalid Admin",
+      });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(401).json({
+        login: false,
+        message: "Incorrect password",
+      });
+    }
+
+    const token = jwt.sign({ adminId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "2d",
+    });
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: 2 * 24 * 60 * 60 * 1000,
+    });
+
+    res.send({
+      adminLogin: true,
+      message: "Welcome ILHAM SIR!",
+      user,
+    });
+  } catch (error) {
+    res.status(500).send("Login error");
+  }
+});
+
+// -----------------------------
+// AUTH MIDDLEWARE
+// -----------------------------
+const authMiddleware = async (req, res, next) => {
+  const token = req.cookies.token;
+
+  if (!token) {
+    return res.status(401).json({
+      login: false,
+      message: "No token",
+    });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    req.user = await User.findById(decoded.adminId);
+
+    next();
+  } catch (error) {
+    res.status(401).json({
+      login: false,
+      message: "Invalid token",
+    });
+  }
+};
+
+// -----------------------------
+// CHECK LOGIN
+// -----------------------------
+app.get("/admin-check-login", authMiddleware, (req, res) => {
+  res.send({
+    adminLogin: true,
+    message: "Welcome ILHAM SIR!",
+    user: req.user,
+  });
+});
+
+// -----------------------------
+// LOGOUT
+// -----------------------------
+app.get("/admin-logout", (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  });
+
+  res.send({
+    adminLogin: false,
+    message: "Logged out",
+  });
+});
+
+// -----------------------------
+// DELETE STUDENT
+// -----------------------------
+app.delete("/student/:id", async (req, res) => {
+  try {
+    await Student.findByIdAndDelete(req.params.id);
+
+    const students = await Student.find();
+
+    res.send(students);
+  } catch (error) {
+    res.status(500).send("Delete failed");
+  }
+});
+
+// -----------------------------
 module.exports = app;
