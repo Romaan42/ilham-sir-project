@@ -237,12 +237,11 @@ app.get("/admin-logout", (req, res) => {
 app.delete("/student/:id", async (req, res) => {
   try {
     await Student.findByIdAndDelete(req.params.id);
-
-    const students = await Student.find();
-
-    res.send(students);
+    res
+      .status(201)
+      .json({ success: true, message: "student deleted successfully" });
   } catch (error) {
-    res.status(500).send("Delete failed");
+    res.status(500).json({ success: false, message: "Delete failed" });
   }
 });
 

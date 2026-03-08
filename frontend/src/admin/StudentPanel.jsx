@@ -1,8 +1,9 @@
 import { useDispatch, useSelector } from "react-redux"
 import { FaBars, FaEye, FaPlusCircle, FaThLarge, FaTrash, FaUserEdit } from "react-icons/fa";
 import { useEffect } from "react";
-import { deleteStudent, getAllStudents } from "../store/students";
+import { getAllStudents } from "../store/students";
 import { Link } from "react-router-dom";
+import api from "../api/axiosConfig";
 
 const StudentPanel = () => {
     const dispatch = useDispatch()
@@ -12,9 +13,12 @@ const StudentPanel = () => {
         dispatch(getAllStudents())
     }, [])
 
-    const handleStudentDelete = (id) => {
-        dispatch(deleteStudent(id));
-        dispatch(getAllStudents());
+    const handleStudentDelete = async (id) => {
+        const res = await api.delete(`/student/${id}`);
+
+        if (res.data.success) {
+            dispatch(getAllStudents())
+        }
     }
 
     return (

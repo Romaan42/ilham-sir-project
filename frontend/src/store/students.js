@@ -6,14 +6,6 @@ export const getAllStudents = createAsyncThunk("getstudents", async () => {
   if (res) return res.data;
 });
 
-export const deleteStudent = createAsyncThunk(
-  "deletestudent",
-  async (studentId) => {
-    const res = await api.delete(`/student/${studentId}`);
-    if (res) return;
-  },
-);
-
 const studentSlice = createSlice({
   name: "student",
   initialState: {
@@ -35,15 +27,6 @@ const studentSlice = createSlice({
       .addCase(getAllStudents.rejected, (state) => {
         state.loading = false;
         state.students = [];
-      })
-      .addCase(deleteStudent.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(deleteStudent.fulfilled, (state) => {
-        state.loading = false;
-      })
-      .addCase(deleteStudent.rejected, (state) => {
-        state.loading = false;
       });
   },
 });
