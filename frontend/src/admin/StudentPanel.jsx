@@ -1,9 +1,8 @@
 import { useDispatch, useSelector } from "react-redux"
 import { FaBars, FaEye, FaPlusCircle, FaThLarge, FaTrash, FaUserEdit } from "react-icons/fa";
 import { useEffect } from "react";
-import { getAllStudents } from "../store/students";
+import { deleteStudent, getAllStudents } from "../store/students";
 import { Link } from "react-router-dom";
-import api from "../api/axiosConfig";
 
 const StudentPanel = () => {
     const dispatch = useDispatch()
@@ -13,12 +12,10 @@ const StudentPanel = () => {
         dispatch(getAllStudents())
     }, [])
 
-    const handleStudentDelete = async (id) => {
-        const res = await api.delete(`/student/${id}`);
+    const handleStudentDelete = (id) => {
+        dispatch(deleteStudent(id))
+        dispatch(getAllStudents())
 
-        if (res.data.success) {
-            dispatch(getAllStudents())
-        }
     }
 
     return (
@@ -94,7 +91,7 @@ const StudentPanel = () => {
                                 </tr>
                             </tbody>
                         )}
-                        {!loading && students.length === 0 && (
+                        {!loading && students && students?.length === 0 && (
                             <tbody>
                                 <tr>
                                     <td colSpan="6" className="p-8">
@@ -133,7 +130,7 @@ const StudentPanel = () => {
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
 
-                            {students.map((val) => (
+                            {!loading && students && students.map((val) => (
                                 <tr key={val._id} className="hover:bg-gray-50 transition-all duration-200">
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center">
