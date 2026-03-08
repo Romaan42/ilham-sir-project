@@ -44,7 +44,7 @@ app.use(
     credentials: true,
     // FIX: Corrected typo from 'orginSuccessStatus' to 'optionsSuccessStatus'
     optionsSuccessStatus: 200,
-  })
+  }),
 );
 
 // -----------------------------
@@ -52,10 +52,7 @@ app.use(
 // -----------------------------
 async function connectToDatabase() {
   try {
-    await mongoose.connect(process.env.MONGO_URL, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(process.env.MONGODB_URL);
     console.log("✅ Connected to MongoDB");
   } catch (error) {
     console.error("❌ Error connecting to MongoDB:", error);
@@ -74,7 +71,30 @@ app.get("/", (req, res) => {
 
 app.post("/student", async (req, res) => {
   try {
-    const student = new Student(req.body);
+    const {
+      name,
+      fatherName,
+      phone,
+      dob,
+      gender,
+      email,
+      address,
+      course,
+      enrlDate,
+      fees,
+    } = req.body;
+    const student = new Student({
+      name,
+      fatherName,
+      phone,
+      dob,
+      gender,
+      email,
+      address,
+      course,
+      enrlDate,
+      fee: fees,
+    });
     await student.save();
     res.send({ success: true, message: "Student Registered" });
   } catch (error) {
@@ -119,7 +139,7 @@ app.post("/admin-login", async (req, res) => {
     const token = jwt.sign(
       { adminId: user._id, email: user.email },
       process.env.JWT_SECRET,
-      { expiresIn: "2d" }
+      { expiresIn: "2d" },
     );
 
     res.cookie("token", token, {
@@ -174,4 +194,5 @@ app.delete("/student/:id", async (req, res) => {
 });
 
 // -----------------------------
+
 module.exports = app;

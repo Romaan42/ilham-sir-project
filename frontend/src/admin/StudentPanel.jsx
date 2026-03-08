@@ -133,7 +133,7 @@ const StudentPanel = () => {
                                 <tr key={val._id} className="hover:bg-gray-50 transition-all duration-200">
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center">
-                                            <div className="shrink-0 h-12 w-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center text-white shadow-sm">
+                                            <div className="shrink-0 h-12 w-12 bg-linear-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center text-white shadow-sm">
                                                 <span className="text-lg font-semibold">{val.name[0].toUpperCase()}</span>
                                             </div>
                                             <div className="ml-4">
@@ -163,8 +163,8 @@ const StudentPanel = () => {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 border border-green-200">
-                                            Completed
+                                        <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full  ${val === "completed" ? "text-red-400 bg-green-100" : "bg-red-400 text-white"} border border-green-200`}>
+                                            {val.fee}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">

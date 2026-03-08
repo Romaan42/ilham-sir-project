@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { toast, Toaster } from "react-hot-toast";
+import { FaCalendarCheck } from "react-icons/fa";
 
 const AddStudent = () => {
     const [loading, setLoading] = useState(false);
@@ -20,8 +21,9 @@ const AddStudent = () => {
             enrlDate: e.target.enrollDate.value,
             fees: e.target.fees.value,
         };
+
         axios
-            .post("https://ilham-sir-project.vercel.app/student", allData)
+            .post("https://ilham-sir-finel.vercel.app/student", allData)
             .then((res) => {
                 toast.success(res.data.message);
                 document.getElementById("studentForm").reset();
@@ -204,8 +206,8 @@ const AddStudent = () => {
                                 >
                                     <option value="">Select Course</option>
                                     <option value="D.I.T">D.I.T</option>
-                                    <option value="office">MS office</option>
-                                    <option value="photoshop">Photoshop</option>
+                                    <option value="C.I.T">C.I.T</option>
+
                                 </select>
                                 <i className="fas fa-chevron-down absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"></i>
                             </div>
@@ -216,7 +218,7 @@ const AddStudent = () => {
                                 Enrollment Date <span className="text-red-500">*</span>
                             </label>
                             <div className="relative">
-                                <i className="fas fa-calendar-check absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                <FaCalendarCheck />
                                 <input
                                     type="date"
                                     name="enrollDate"

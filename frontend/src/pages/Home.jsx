@@ -5,7 +5,6 @@ import api from "../api/axiosConfig";
 const Home = () => {
 
     useEffect(() => {
-        console.log("Home component mounted");
         api.get("/students-data").then((response) => {
             console.log(response.data);
         }).catch((error) => {
