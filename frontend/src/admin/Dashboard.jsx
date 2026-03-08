@@ -63,7 +63,7 @@ const Dashboard = () => {
                 <div className="bg-white rounded-xl shadow-sm p-6">
                     <h3 className="text-lg font-semibold text-gray-800 mb-6">Top Performing Students</h3>
                     <div className="space-y-4">
-                        {students.length === 0 && !loading && <h1 className='text-center font-bold'>No students found</h1>}
+                        {students?.length === 0 && !loading && <h1 className='text-center font-bold'>No students found</h1>}
                         {loading && <div className="bg-white rounded-lg shadow-md p-6 mb-6">
                             <div className="flex items-center space-x-4 mb-4">
                                 <div className="w-16 h-16 bg-gray-300 rounded-full animate-pulse-custom"></div>
@@ -78,7 +78,7 @@ const Dashboard = () => {
                                 <div className="h-3 bg-gray-300 rounded animate-pulse-custom"></div>
                             </div>
                         </div>}
-                        {students.map((student) => (
+                        {!loading && students && students.map((student) => (
                             <div key={student._id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                                 <div className="flex items-center space-x-3">
                                     <img src={`https://ui-avatars.com/api/?name=${student.name}&background=10B981&color=fff`} alt={student.name} className="w-10 h-10 rounded-full" />
